@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hujjatlar Arxivi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper: #EAE3D2;
+    --paper-light: #F6F1E5;
+    --ink: #23281F;
+    --ink-soft: #55584C;
+    --brass: #A87A2A;
+    --brass-dark: #7C5A1E;
+    --forest: #33473B;
+    --stamp-red: #8C3B2E;
+    --line: #C9BFA6;
+    --radius: 3px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background: var(--paper);
+    background-image:
+      repeating-linear-gradient(0deg, rgba(0,0,0,0.015) 0px, rgba(0,0,0,0.015) 1px, transparent 1px, transparent 34px);
+    color: var(--ink);
+    font-family: 'IBM Plex Sans', sans-serif;
+    min-height: 100vh;
+  }
+  h1,h2,h3{ font-family: 'Fraunces', serif; font-weight: 600; margin: 0; }
+  .mono{ font-family: 'IBM Plex Mono', monospace; }
+
+  /* ---------- Header / Index tab ---------- */
+  .topbar{
+    display:flex; align-items:center; justify-content:space-between;
+    padding: 22px 36px;
+    border-bottom: 1.5px solid var(--ink);
+  }
+  .brand{ display:flex; align-items:baseline; gap:10px; }
+  .brand-mark{
+    width:32px; height:32px; border:2px solid var(--forest); border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Fraunces',serif; font-weight:700; color:var(--forest); font-size:15px;
+  }
+  .brand h1{ font-size: 22px; letter-spacing: 0.2px; }
+  .brand span{ font-size:11px; color: var(--ink-soft); text-transform:uppercase; letter-spacing:1.5px; }
+  #logoutBtn{
+    background:none; border: 1px solid var(--ink); color: var(--ink);
+    font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:0.5px;
+    padding:8px 14px; border-radius: var(--radius); cursor:pointer; text-transform:uppercase;
+    display:none;
+  }
+  #logoutBtn:hover{ background: var(--ink); color: var(--paper-light); }
+
+  /* ---------- Login screen ---------- */
+  .login-wrap{
+    min-height: calc(100vh - 84px);
+    display:flex; align-items:center; justify-content:center;
+    padding: 24px;
+  }
+  .login-card{
+    background: var(--paper-light);
+    border: 1.5px solid var(--ink);
+    border-radius: var(--radius);
+    padding: 44px 40px 36px;
+    width: 100%; max-width: 380px;
+    position: relative;
+    box-shadow: 6px 6px 0 rgba(35,40,31,0.08);
+  }
+  .login-card::before{
+    content: 'KIRISH RUXSATNOMASI';
+    position:absolute; top:-11px; left:28px;
+    background: var(--paper);
+    padding: 0 10px;
+    font-family:'IBM Plex Mono',monospace;
+    font-size: 10px; letter-spacing: 2px; color: var(--brass-dark);
+  }
+  .login-card h2{ font-size:26px; margin-bottom:6px; }
+  .login-card p.sub{ color:var(--ink-soft); font-size:13.5px; margin-bottom:28px; }
+  .field{ margin-bottom:18px; }
+  .field label{
+    display:block; font-family:'IBM Plex Mono',monospace; font-size:11px;
+    letter-spacing:1px; text-transform:uppercase; color:var(--ink-soft); margin-bottom:6px;
+  }
+  .field input{
+    width:100%; padding:11px 12px; border: 1.5px solid var(--line);
+    border-radius: var(--radius); background: #fff; font-size:14.5px;
+    font-family:'IBM Plex Sans',sans-serif; color:var(--ink);
+  }
+  .field input:focus{ outline:none; border-color:var(--forest); }
+  .btn-primary{
+    width:100%; padding:13px; background: var(--forest); color:#fff; border:none;
+    border-radius: var(--radius); font-size:14px; font-weight:600; letter-spacing:0.3px;
+    cursor:pointer; margin-top:6px; font-family:'IBM Plex Sans',sans-serif;
+  }
+  .btn-primary:hover{ background: #253A2F; }
+  .btn-primary:disabled{ opacity:0.6; cursor:default; }
+  .error-msg{
+    color: var(--stamp-red); font-size:13px; margin-top:12px; display:none;
+    font-family:'IBM Plex Mono',monospace;
+  }
+
+  /* ---------- App screen ---------- */
+  #app{ display:none; padding: 32px 36px 60px; max-width: 980px; margin: 0 auto; }
+  .search-panel{
+    background: var(--paper-light); border: 1.5px solid var(--ink);
+    border-radius: var(--radius); padding: 24px 26px;
+    display:grid; grid-template-columns: 1fr 160px 160px auto; gap:14px; align-items:end;
+    margin-bottom: 30px;
+  }
+  .search-panel .field{ margin-bottom:0; }
+  .btn-search{
+    padding: 11px 22px; background: var(--brass); color:#fff; border:none;
+    border-radius: var(--radius); font-weight:600; cursor:pointer; height:44px;
+  }
+  .btn-search:hover{ background: var(--brass-dark); }
+
+  .results-head{
+    display:flex; justify-content:space-between; align-items:baseline;
+    border-bottom: 1.5px solid var(--ink); padding-bottom:8px; margin-bottom:4px;
+  }
+  .results-head h3{ font-size:15px; text-transform:uppercase; letter-spacing:1px; }
+  .results-count{ font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--ink-soft); }
+
+  .doc-row{
+    display:grid; grid-template-columns: 64px 1fr auto auto; gap:16px; align-items:center;
+    padding: 14px 4px; border-bottom: 1px solid var(--line);
+  }
+  .doc-thumb{
+    width:56px; height:56px; border-radius:2px; object-fit:cover;
+    border:1px solid var(--line); background:#ddd;
+  }
+  .doc-name{ font-size:15.5px; font-weight:500; }
+  .doc-meta{ font-size:12px; color:var(--ink-soft); margin-top:3px; font-family:'IBM Plex Mono',monospace; }
+  .doc-date-badge{
+    font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:var(--stamp-red);
+    border: 1.5px solid var(--stamp-red); border-radius:20px; padding: 4px 10px;
+    transform: rotate(-3deg); white-space:nowrap;
+  }
+  .doc-link{
+    font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--forest);
+    text-decoration:none; border-bottom:1px solid var(--forest); white-space:nowrap;
+  }
+  .empty-state{
+    text-align:center; padding: 60px 20px; color:var(--ink-soft);
+  }
+  .empty-state .mark{ font-size:34px; margin-bottom:10px; }
+
+  @media (max-width: 640px){
+    .search-panel{ grid-template-columns: 1fr; }
+    .doc-row{ grid-template-columns: 48px 1fr; }
+    .doc-date-badge, .doc-link{ grid-column: 2; justify-self:start; margin-top:4px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">
+    <div class="brand-mark">H</div>
+    <div>
+      <h1>Hujjatlar Arxivi</h1><br>
+      <span>skanerlangan hujjatlar reyestri</span>
+    </div>
+  </div>
+  <button id="logoutBtn">Chiqish</button>
+</div>
+
+<!-- LOGIN -->
+<div class="login-wrap" id="loginScreen">
+  <div class="login-card">
+    <h2>Xush kelibsiz</h2>
+    <p class="sub">Arxivga kirish uchun login va parolingizni kiriting.</p>
+    <div class="field">
+      <label for="username">Login</label>
+      <input type="text" id="username" autocomplete="username">
+    </div>
+    <div class="field">
+      <label for="password">Parol</label>
+      <input type="password" id="password" autocomplete="current-password">
+    </div>
+    <button class="btn-primary" id="loginBtn">Kirish</button>
+    <div class="error-msg" id="loginError"></div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="search-panel">
+    <div class="field">
+      <label>Nomi bo'yicha qidirish</label>
+      <input type="text" id="qName" placeholder="masalan: shartnoma 1432837">
+    </div>
+    <div class="field">
+      <label>Sanadan</label>
+      <input type="date" id="qFrom">
+    </div>
+    <div class="field">
+      <label>Sanagacha</label>
+      <input type="date" id="qTo">
+    </div>
+    <button class="btn-search" id="searchBtn">Qidirish</button>
+  </div>
+
+  <div class="results-head">
+    <h3>Natijalar</h3>
+    <span class="results-count" id="resultsCount">0 ta hujjat</span>
+  </div>
+  <div id="resultsList"></div>
+</div>
+
+<script>
+  // ====== SHU YERGA APPS SCRIPT WEB APP URL'INI QO'YING ======
+  const API_URL = 'https://script.google.com/macros/s/AKfycbx0mqenG8ropwVuHb0eWRUNhu7gTd9xAXJRTz0gmHoUrC45eiI2gaN-h-I00IvKCACw/exec';
+
+  const loginScreen = document.getElementById('loginScreen');
+  const app = document.getElementById('app');
+  const logoutBtn = document.getElementById('logoutBtn');
+
+  function getToken(){ return localStorage.getItem('hujjatlar_token'); }
+  function setToken(t){ localStorage.setItem('hujjatlar_token', t); }
+  function clearToken(){ localStorage.removeItem('hujjatlar_token'); }
+
+  async function apiCall(payload){
+    const resp = await fetch(API_URL, {
+      method: 'POST',
+      headers: {'Content-Type': 'text/plain;charset=utf-8'},
+      body: JSON.stringify(payload)
+    });
+    return resp.json();
+  }
+
+  function showApp(){
+    loginScreen.style.display = 'none';
+    app.style.display = 'block';
+    logoutBtn.style.display = 'inline-block';
+    runSearch();
+  }
+  function showLogin(){
+    loginScreen.style.display = 'flex';
+    app.style.display = 'none';
+    logoutBtn.style.display = 'none';
+  }
+
+  document.getElementById('loginBtn').addEventListener('click', doLogin);
+  document.getElementById('password').addEventListener('keydown', e => { if(e.key === 'Enter') doLogin(); });
+
+  async function doLogin(){
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value;
+    const errEl = document.getElementById('loginError');
+    const btn = document.getElementById('loginBtn');
+    errEl.style.display = 'none';
+
+    if(!username || !password){
+      errEl.textContent = "Login va parolni kiriting";
+      errEl.style.display = 'block';
+      return;
+    }
+
+    btn.disabled = true; btn.textContent = 'Tekshirilmoqda...';
+    try{
+      const res = await apiCall({action:'login', username, password});
+      if(res.ok){
+        setToken(res.token);
+        showApp();
+      } else {
+        errEl.textContent = res.error || 'Xatolik yuz berdi';
+        errEl.style.display = 'block';
+      }
+    } catch(e){
+      errEl.textContent = 'Serverga ulanib bo\'lmadi';
+      errEl.style.display = 'block';
+    }
+    btn.disabled = false; btn.textContent = 'Kirish';
+  }
+
+  logoutBtn.addEventListener('click', async () => {
+    await apiCall({action:'logout', token: getToken()});
+    clearToken();
+    showLogin();
+  });
+
+  document.getElementById('searchBtn').addEventListener('click', runSearch);
+  document.getElementById('qName').addEventListener('keydown', e => { if(e.key==='Enter') runSearch(); });
+
+  async function runSearch(){
+    const query = document.getElementById('qName').value.trim();
+    const dateFrom = document.getElementById('qFrom').value;
+    const dateTo = document.getElementById('qTo').value;
+    const listEl = document.getElementById('resultsList');
+    const countEl = document.getElementById('resultsCount');
+
+    listEl.innerHTML = '<div class="empty-state">Qidirilmoqda...</div>';
+
+    const res = await apiCall({action:'search', token: getToken(), query, dateFrom, dateTo});
+
+    if(!res.ok){
+      if(res.error && res.error.indexOf('Sessiya') !== -1){
+        clearToken(); showLogin(); return;
+      }
+      listEl.innerHTML = '<div class="empty-state">Xatolik: '+ (res.error||'') +'</div>';
+      return;
+    }
+
+    countEl.textContent = res.results.length + ' ta hujjat';
+
+    if(res.results.length === 0){
+      listEl.innerHTML = '<div class="empty-state"><div class="mark">&#128193;</div>Hech narsa topilmadi</div>';
+      return;
+    }
+
+    listEl.innerHTML = res.results.map(doc => `
+      <div class="doc-row">
+        <img class="doc-thumb" src="${doc.url}" onerror="this.style.visibility='hidden'">
+        <div>
+          <div class="doc-name">${escapeHtml(doc.name)}</div>
+          <div class="doc-meta">yukladi: ${escapeHtml(doc.uploadedBy || '-')} &middot; ${doc.time}</div>
+        </div>
+        <div class="doc-date-badge">${doc.date}</div>
+        <a class="doc-link" href="${doc.url}" target="_blank">Ko'rish &rarr;</a>
+      </div>
+    `).join('');
+  }
+
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  // Sahifa ochilganda sessiya bor-yo'qligini tekshiramiz
+  if(getToken()){
+    showApp();
+  } else {
+    showLogin();
+  }
+</script>
+
+</body>
+</html>
